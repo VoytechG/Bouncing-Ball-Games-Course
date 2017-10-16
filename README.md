@@ -3,6 +3,13 @@ Course prepared for a University College London project prepared by Wojciech Gol
 
 In this course, you will learn how to program from scratch a simple physics simulation of a Bouncing Ball, a Flappy Ball game based on iconic Flappy Bird, and a challenging Maze Ball game! We will explain every smallest piece of code line by line and everything you need to know to get started with programming, so you can easily, without any fear of having never programmed before, undertake the challenge!
 
+Play yourself!
+
+1. [Bouncing Ball](https://gvoy.tech/bouncingball/)
+2. [Flappy Ball](https://gvoy.tech/flappyball/)
+3. [Maze Ball](https://gvoy.tech/mazeball/)
+
+Control instrutions below!
 
 ## Overview
 
