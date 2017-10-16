@@ -57,10 +57,7 @@ function BallObject() {
 var ball;
 function draw ()
 {
-  if (frameCount%1==0)
-  {
     background(0);
     ball.move();
     ball.show();
-  }
 }

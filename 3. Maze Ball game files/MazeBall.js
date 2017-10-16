@@ -16,12 +16,16 @@ function Ball () {
   var gravity = 0.2;
   var friction = 0.85;
   this.dw = 0;
-  this.col = 0;
-  this.afterCol = 1;
 
-  this.colUp = 1;
-  this.colDown = 1;
-  this.colLat = 1;
+  this.yspeed = function()
+  {
+    return yspeed;
+  }
+
+  this.xspeed = function()
+  {
+    return xspeed;
+  }
 
   this.bounceUp = function(y)
   {
@@ -68,6 +72,35 @@ function Ball () {
     this.x += xspeed;
   }
 
+  this.bounceCorner = function(xdif,ydif)
+  {
+    print("CORNER COLLISION");
+    angle=get_angle(xdif,ydif);
+    /*if(angle>PI/2)
+      angle=PI/2;
+    else if(angle<-PI/2)
+      angle=-PI/2;*/
+    cosa=Math.cos(angle);
+    sina=Math.sin(angle);
+
+
+
+    //get the y and x speeds in the newly defined inclined plane
+    v1=xspeed*cosa-yspeed*sina; //the OX axis in the inclined plane defined by the angle
+    v2=xspeed*sina+yspeed*cosa; //the OY axis in the inclined plane defined by the angle
+    print(angle*57.2957795131 + "," + xspeed + "," + yspeed + "," + v1 + "," + v2);
+    //get the resulting speeds in the original (normal) plane
+    xspeed=v1*cosa-v2*sina;
+    yspeed=v2*cosa+v1*sina;
+
+    print(xspeed + "," + yspeed);
+
+    coef=0.9;
+    xspeed*=coef;
+    yspeed*=coef;
+    this.y += yspeed;
+    this.x += xspeed;
+  }
   this.move = function() {
 
 
@@ -129,8 +162,7 @@ function Block(x, y , wid , hei){
     this.y = y;
     this.wid = wid;
     this.hei = hei;
-  //  this.lowbloH = random(height/10,height*3/5);
-  //  this.holeH = random(10*ball.r, 15*ball.r);
+
     this.scored=false;
 
     var xspeed = 3;
@@ -138,12 +170,6 @@ function Block(x, y , wid , hei){
     this.move = function(){
       this.x -= xspeed;
     }
-
-  /*  this.show = function(){
-      fill(23, 145, 23);  //light green
-      rect(this.x, height - 0, this.wid, - this.lowbloH);
-      rect(this.x, height - height, this.wid, -( -(height-this.lowbloH - this.holeH) ));
-    }*/
 
     this.moveV = function(y, yF) // the area of movement
     {
@@ -165,15 +191,6 @@ function Block(x, y , wid , hei){
 
     this.checkcollision = function(){
       return rect_coll(this.x, this.y, this.wid, this.hei);
-      //if (rect_coll(this.x, height, this.wid, -(height - this.lowbloH - this.holeH))) return true;
-    }
-    this.addscore = function()
-    {
-      if(this.scored == false && check_addscore(this.x, this.wid))
-        {
-          score.points++;
-          this.scored=true;
-        }
     }
 }
 
@@ -201,36 +218,52 @@ function showFinish()
 function rect_coll(x, y, wid, hei)
 {
     //if crossed horizontal wall
-    if (ball.x > x && ball.x < x + wid)
-        if (ball.y+ball.r>max(y,y+hei) && ball.y-ball.r<max(y,y+hei))
+    if (ball.x+ball.xspeed() > x && ball.x+ball.xspeed() < x + wid)
+        if (ball.y+ball.yspeed()+ball.r>max(y,y+hei) && ball.y+ball.yspeed()-ball.r<max(y,y+hei))
             {
               ball.bounceUp(y+hei);
               return true;
             }
-        else if(ball.y+ball.r>min(y,y+hei) && ball.y-ball.r<min(y,y+hei))
+        else if(ball.y+ball.yspeed()+ball.r>min(y,y+hei) && ball.y+ball.yspeed()-ball.r<min(y,y+hei))
         {
           ball.bounceDown(y);
           return true;
         }
 
     //if crossed vertical wall
-     if (ball.y>min(y,y+hei) && ball.y<max(y,y+hei))
-         if (ball.x+ball.r >= x && ball.x-ball.r <= x )
+     if (ball.y+ball.yspeed()>min(y,y+hei) && ball.y+ball.yspeed()<max(y,y+hei))
+         if (ball.x+ball.xspeed()+ball.r >= x && ball.x+ball.xspeed()-ball.r <= x )
              {
                ball.bounceLat();
                return true;
              }
-        else if (ball.x+ball.r >= x + wid && ball.x-ball.r <= x + wid )
+        else if (ball.x+ball.xspeed()+ball.r >= x + wid && ball.x+ball.xspeed()-ball.r <= x + wid )
               {
                 ball.bounceLat();
                 return true;
               }
 
     //if bumbed against a corner
-    if (check_dist(ball.x-x, ball.y-y, ball.r)) return true;
-    if (check_dist(ball.x-x-wid, ball.y-y, ball.r)) return true;
-    if (check_dist(ball.x-x, ball.y-y-hei, ball.r)) return true;
-    if (check_dist(ball.x-x-wid, ball.y-y-hei, ball.r)) return true;
+    if (check_dist(ball.x-x+ball.xspeed(), ball.y-y+ball.yspeed(), ball.r))
+    {
+      ball.bounceCorner((ball.x-x+ball.xspeed()),ball.y-y+ball.yspeed());
+      return true;
+    }
+    if (check_dist((ball.x-x-wid+ball.xspeed()), ball.y-y+ball.yspeed(), ball.r))
+    {
+      ball.bounceCorner(ball.x-x-wid+ball.xspeed(),ball.y-y+ball.yspeed());
+      return true;
+    }
+    if (check_dist(ball.x-x+ball.xspeed(), ball.y-y-hei+ball.yspeed(), ball.r))
+    {
+      ball.bounceCorner((ball.x-x+ball.xspeed()),ball.y-y-hei+ball.yspeed());
+      return true;
+    }
+    if (check_dist(ball.x-x-wid+ball.xspeed(), ball.y-y-hei+ball.yspeed(), ball.r))
+    {
+      ball.bounceCorner((ball.x-x-wid+ball.xspeed()),ball.y-y-hei+ball.yspeed());
+      return true;
+    }
 
     //wheeee!
     return false;
@@ -242,34 +275,17 @@ function check_dist(a,b,c)
   return false;
 }
 
-function check_addscore(x, wid)
+function get_angle(x,y)
 {
-  mid=x+wid/2;
-  fin=x+wid;
-  if(ball.x>=mid && ball.x<=fin)
-    return true;
-  return false;
-}
-
-function finish()
-{
-  while(lost==true)
-  {
-
-
-  }
+  return Math.atan2(y,x);
 }
 
 var ball;
-var numoblo, cmod, gap;
 var lost,won;
-var nBalls = 11;
-var nObst = 1;
 
 function Initialise()
 {
   ball, blocks = [], obstacles = [], movObst = [];
-  numoblo = 4, cmod = 0, gap = 300;
   lost = false; won = false;
 
   ball = new Ball ();

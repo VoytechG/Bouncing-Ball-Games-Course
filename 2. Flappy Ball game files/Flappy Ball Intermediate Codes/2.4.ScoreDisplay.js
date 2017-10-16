@@ -1,3 +1,28 @@
+function setup()
+{
+  createCanvas(960, 540);
+  noStroke();
+  Initialise();
+}
+
+var score;
+var ball, blocks = [];
+var numoblo, cmod, gap;
+var lost;
+
+function Initialise()
+{
+  ball, blocks = [];
+  numoblo = 4, cmod = 0, gap = 250;
+  lost = false;
+
+  score = new Score();
+  ball = new Ball ();
+  blocks.push(new Block(width))
+  for (let i = 1; i < numoblo; i++)
+    blocks.push(new Block(blocks[i-1].x + blocks[i-1].wid + gap));
+}
+
 function Ball () {
   this.r = 15;
   this.x = width/10;
@@ -17,13 +42,8 @@ function Ball () {
       }
       else dw = 0;
 
-      if ( this.y - this.r + yspeed < 0 ){
-          yspeed = 0; this.y = this.r;
-      }
-
-      if ( this.y + this.r + yspeed > height){
-          yspeed = 0; this.y = height - this.r;
-      }
+      if ( this.y - this.r + yspeed < 0 ) {yspeed = 0; this.y = this.r; }
+      if ( this.y + this.r + yspeed > height) {yspeed= 0; this.y = height - this.r; }
 
       this.y += yspeed;
   }
@@ -40,7 +60,7 @@ function Block(x){
     this.wid = random(50,125);
     this.lowbloH = random(height/10,height*3/5);
     this.holeH = random(10*ball.r, 15*ball.r);
-    this.scored = false;
+    this.scored=false;
 
     var xspeed = 5;
     this.move = function(){
@@ -48,15 +68,17 @@ function Block(x){
     }
 
     this.show = function(){
-      fill(23, 145, 23); //green
+      fill(23, 145, 23);  //light green
       rect(this.x, height - 0, this.wid, - this.lowbloH);
-      rect(this.x, height - this.lowbloH - this.holeH, this.wid, -(height - this.lowbloH - this.holeH) );
+      rect(this.x, height - this.lowbloH - this.holeH, this.wid,
+        -(height - this.lowbloH - this.holeH));
     }
 
     this.checkcollision = function(){
       if (rect_coll(this.x, 0, this.wid, this.lowbloH)) return true;
       if (rect_coll(this.x, this.lowbloH + this.holeH, this.wid,
         height - this.lowbloH - this.holeH)) return true;
+
       return false;
     }
 
@@ -66,7 +88,7 @@ function Block(x){
       {
         score.points++;
         this.scored=true;
-      }
+        }
     }
 }
 
@@ -84,54 +106,19 @@ function rect_coll(x, y, wid, hei)
              return true;
     }
 
-    //if bumped against a corner
+    //if bumbed against a corner
     if (check_dist(ball.x-x, ball.y-y, ball.r)) return true;
     if (check_dist(ball.x-x-wid, ball.y-y, ball.r)) return true;
     if (check_dist(ball.x-x, ball.y-y-hei, ball.r)) return true;
     if (check_dist(ball.x-x-wid, ball.y-y-hei, ball.r)) return true;
+
+    //wheeee!
     return false;
 }
 
 function check_dist(a,b,c)
 {
   if (a*a + b*b < c*c) return true;
-  return false;
-}
-
-function setup()
-{
-  createCanvas(960, 540);
-  noStroke();
-  Initialise();
-}
-
-var ball, blocks = [];
-var numoblo, cmod, gap;
-var lost;
-
-function Initialise()
-{
-  ball, blocks = [];
-  numoblo = 4, cmod = 0, gap = 250;
-  lost = false;
-
-
-
-
-  ball = new Ball ();
-  blocks.push(new Block(width))
-  for (let i = 1; i < numoblo; i++)
-    blocks.push(new Block(blocks[i-1].x + blocks[i-1].wid + gap));
-
-    score = new Score();
-}
-
-function check_addscore(x, wid)
-{
-  mid=x+wid/2;
-  fin=x+wid;
-  if(ball.x>=mid && ball.x<=fin)
-    return true;
   return false;
 }
 
@@ -155,20 +142,21 @@ function Score()
   }
 }
 
-this.showFinal = function()
- {
-   fill(255);
-   textSize(30);
-   text("GAME OVER! Press R to restart",350,250);
-   if(this.points!=1) text(this.points.toString() + "  points",510,300);
-   else text(this.points.toString() + "  point",510,300);
- }
+function check_addscore(x, wid)
+{
+  mid=x+wid/2;
+  fin=x+wid;
+  if(ball.x>=mid && ball.x<=fin)
+    return true;
+  return false;
+}
 
 function draw ()
 {
-  background(0);
+  background(0); //blue
 
-  if (!lost){
+  if (!lost)
+  {
     ball.move();
   }
   ball.show();
@@ -176,14 +164,13 @@ function draw ()
   var ccmod = cmod;
   for (let i = 0; i < numoblo; i++)
   {
-    var here = (i+ccmod)%numoblo;
-    var last = (here + numoblo - 1) % numoblo;
+    var here = (i+ccmod)%numoblo, last = (here + numoblo - 1) % numoblo;
 
     if (!lost) {
       blocks[here].move();
       lost = blocks[here].checkcollision();
-      if (lost) console.log("Collision!"); //log
-    else blocks[here].addscore(); //check score
+      if (lost) console.log("Collision!");
+      else blocks[here].addscore();
     }
 
     blocks[here].show();
@@ -201,5 +188,5 @@ function draw ()
     }
   }
 
-  if (lost == true && (keyIsDown("R".charCodeAt(0)) || mouseIsPressed))   Initialise();
+  if (lost == true && (keyIsDown("R".charCodeAt(0)) || mouseIsPressed)) Initialise();
 }
