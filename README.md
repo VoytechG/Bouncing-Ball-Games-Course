@@ -1,4 +1,4 @@
-# [Bouncing Ball Games - Beginner JavaScript Coding Course](https://davidalmjali.wixsite.com/codingcurriculum)
+# [Bouncing Ball Games - Beginner JavaScript Programming Course](https://davidalmjali.wixsite.com/codingcurriculum)
 
 In this course, you will learn how to program from scratch a simple physics simulation of a Bouncing Ball, a Flappy Ball game based on iconic Flappy Bird, and a challenging Maze Ball game! We will explain every smallest piece of code line by line and everything you need to know to get started with programming, so you can easily, without any fear of having never programmed before, undertake the challenge!
 
@@ -58,4 +58,4 @@ Controls:
 - D – move ball to the right
 
 ------
-### Course prepared for a University College London project prepared by Wojciech Golaszewski, Cosmin Vladianu, David Al Mjali.
+### Course prepared for a University College London project by [Wojciech Golaszewski](https://github.com/VoytechG), Cosmin Vladianu, David Al Mjali.
